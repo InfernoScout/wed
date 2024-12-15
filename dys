@@ -1,0 +1,42 @@
+from web3 import Web3
+import json
+
+# Connect to an Ethereum node (Infura, Alchemy, or a local node)
+infura_url = 'https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID'  # Replace with your Infura URL
+web3 = Web3(Web3.HTTPProvider(infura_url))
+
+# Check if connection is successful
+if not web3.isConnected():
+    print("Failed to connect to Ethereum node")
+    exit()
+
+# Function to fetch block data by block number
+def fetch_block_data(block_number):
+    block_data = web3.eth.get_block(block_number, full_transactions=True)  # full_transactions=True to get detailed info
+    return block_data
+
+# Function to display block information
+def display_block_data(block_data):
+    print(f"Block Number: {block_data['number']}")
+    print(f"Block Hash: {block_data['hash'].hex()}")
+    print(f"Timestamp: {block_data['timestamp']}")
+    print(f"Block Miner: {block_data['miner']}")
+    print(f"Block Difficulty: {block_data['difficulty']}")
+    print(f"Number of Transactions: {len(block_data['transactions'])}")
+    print(f"Transactions:")
+    
+    for txn in block_data['transactions']:
+        print(f"  - Tx Hash: {txn['hash'].hex()}")
+        print(f"    From: {txn['from']}")
+        print(f"    To: {txn['to']}")
+        print(f"    Value: {web3.fromWei(txn['value'], 'ether')} ETH")
+        print("  --")
+
+# Fetch historical blocks, for example, block numbers 10000000 to 10000010
+start_block = 10000000
+end_block = 10000010
+
+for block_number in range(start_block, end_block + 1):
+    print(f"\nFetching block {block_number}...\n")
+    block_data = fetch_block_data(block_number)
+    display_block_data(block_data)
